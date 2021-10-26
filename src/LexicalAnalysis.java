@@ -30,7 +30,7 @@ public class LexicalAnalysis {
     }
 
     public void printResult() {
-
+        System.out.println(content);
     }
 
     private void analyze() {
