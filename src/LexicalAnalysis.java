@@ -130,8 +130,13 @@ public class LexicalAnalysis {
                 if (Character.isDigit(input)) {
                     state = 6;
                 } else {
-                    state = 7;
                     undoCheck();
+                    undoCheck();
+                    char nextChar = doCheck();
+                    state = 7;
+                    if (nextChar == '.') {
+                        undoCheck();
+                    }
                 }
             } else if (state == 7) {
                 // state 7: int or float
