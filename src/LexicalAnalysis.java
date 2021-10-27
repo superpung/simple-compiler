@@ -38,9 +38,6 @@ public class LexicalAnalysis {
     }
 
     public void printResult() {
-//        for (String token: tokensResult) {
-//            System.out.println(token);
-//        }
         System.out.println(tokensResult.toString());
         for (String token: tokensResult) {
             String output = "";
@@ -61,7 +58,7 @@ public class LexicalAnalysis {
 
                 if (input == ' ' || input == '\t' || input == '\n') {
                     skipCheck();
-                } else if (Character.isLetter(input)) {
+                } else if (Character.isLetter(input) || input == '_') {
                     state = 1;
                 } else if (Character.isDigit(input)) {
                     state = 2;
@@ -107,7 +104,7 @@ public class LexicalAnalysis {
                 }
                 String token = getStringFromList(analyzed);
                 if (OP.contains(token)) {
-                    finishCheck(token, "OP", "_");
+                    finishCheck("OP");
                     state = 0;
                 } else {
                     state = 9;
@@ -115,16 +112,15 @@ public class LexicalAnalysis {
                 }
             } else if (state == 4) {
                 // state 4: se
-                String token = getStringFromList(analyzed);
-                finishCheck(token, "SE", "_");
+                finishCheck("SE");
                 state = 0;
             } else if (state == 5) {
                 // state 5: keyword or idn
                 String token = getStringFromList(analyzed);
                 if (KEYWORDS.contains(token)) {
-                    finishCheck(token, token.toUpperCase(), "_");
+                    finishCheck(token.toUpperCase());
                 } else {
-                    finishCheck(token, "IDN", token);
+                    finishCheck("IDN");
                 }
                 state = 0;
             } else if (state == 6) {
@@ -134,31 +130,23 @@ public class LexicalAnalysis {
                 if (Character.isDigit(input)) {
                     state = 6;
                 } else {
-                    state = 8;
+                    state = 7;
                     undoCheck();
                 }
             } else if (state == 7) {
-                // state 7: int
-                String token = getStringFromList(analyzed);
-                finishCheck(token, "INT", token);
-                state = 0;
-            } else if (state == 8) {
-                // state 8: float
-                String token = getStringFromList(analyzed);
-                finishCheck(token, "FLOAT", token);
+                // state 7: int or float
+                finishCheck("CONST");
                 state = 0;
             } else if (state == 9) {
                 // state 9: single op
-                String token = getStringFromList(analyzed);
-                finishCheck(token, "OP", "_");
+                finishCheck("OP");
                 state = 0;
             } else if (state == 10) {
                 // state 10: char
                 char input = check();
 
                 if (input == '\'') {
-                    String token = getStringFromList(analyzed);
-                    finishCheck(token, "CHAR", token);
+                    finishCheck("CHAR");
                     state = 0;
                 } else {
                     state = 10;
@@ -168,8 +156,7 @@ public class LexicalAnalysis {
                 char input = check();
 
                 if (input == '\"') {
-                    String token = getStringFromList(analyzed);
-                    finishCheck(token, "STR", token);
+                    finishCheck("STR");
                     state = 0;
                 } else {
                     state = 11;
@@ -195,7 +182,12 @@ public class LexicalAnalysis {
         analyzing.add(0, c);
     }
 
-    private void finishCheck(String token, String type, String value) {
+    private void finishCheck(String type) {
+        String token = getStringFromList(analyzed);
+        String value = "_";
+        if ("IDN".equals(type) || "CONST".equals(type) || "CHAR".equals(type) || "STR".equals(type)) {
+            value = token;
+        }
         String[] typeAndValue = new String[]{type, value};
         tokensResult.add(token);
         tableResult.put(token, typeAndValue);
