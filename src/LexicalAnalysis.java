@@ -16,9 +16,9 @@ public class LexicalAnalysis {
     private static final List<Character> SE = new ArrayList<>(Arrays.asList(
             '(', ')', '{', '}', ';', ',', '[', ']'
     ));
-    private static final List<String> OTHER_TOKENS = new ArrayList<>(Arrays.asList(
-            "IDN", "INT", "FLOAT", "CHAR", "STR"
-    ));
+//    private static final List<String> OTHER_TOKENS = new ArrayList<>(Arrays.asList(
+//            "IDN", "INT", "FLOAT", "CHAR", "STR"
+//    ));
     private static final List<Character> SINGLE_OP = new ArrayList<>(Arrays.asList(
             '+', '-', '*', '/', '%', '=', '>', '<', '!', '&', '|'
     ));
