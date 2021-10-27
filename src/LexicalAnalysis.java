@@ -23,10 +23,10 @@ public class LexicalAnalysis {
             '+', '-', '*', '/', '%', '=', '>', '<', '!', '&', '|'
     ));
 
-    List<Character> analyzed;
-    List<Character> analyzing;
-    private List<String> tokensResult;
-    private Map<String, String[]> tableResult;
+    private final List<Character> analyzed;
+    private final List<Character> analyzing;
+    private final List<String> tokensResult;
+    private final Map<String, String[]> tableResult;
 
     public LexicalAnalysis(String filename) {
         String content = readFromFile(filename) + '\n';
@@ -71,7 +71,7 @@ public class LexicalAnalysis {
                 } else if (input == '\"') {
                     state = 11;
                 } else {
-                    System.out.println("ERROR: " + input);
+                    System.out.println("Unrecognized input: " + input + "!");
                 }
             } else if (state == 1) {
                 // state 1: 1 letter before
@@ -161,6 +161,8 @@ public class LexicalAnalysis {
                 } else {
                     state = 11;
                 }
+            } else {
+                System.out.println("Unreachable state!");
             }
         }
     }
@@ -204,7 +206,7 @@ public class LexicalAnalysis {
 
     private String readFromFile(String filename) {
         Reader reader = null;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         try {
             char[] chars = new char[1024];
             reader = new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8);
