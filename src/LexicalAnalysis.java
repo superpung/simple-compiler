@@ -54,7 +54,7 @@ public class LexicalAnalysis {
         while (!analyzing.isEmpty()) {
             if (state == 0) {
                 // state 0: initial state
-                char input = check();
+                char input = doCheck();
 
                 if (input == ' ' || input == '\t' || input == '\n') {
                     skipCheck();
@@ -75,7 +75,7 @@ public class LexicalAnalysis {
                 }
             } else if (state == 1) {
                 // state 1: 1 letter before
-                char input = check();
+                char input = doCheck();
 
                 if (Character.isLetter(input) || Character.isDigit(input) || input == '_') {
                     state = 1;
@@ -85,7 +85,7 @@ public class LexicalAnalysis {
                 }
             } else if (state == 2) {
                 // state 2: 1 digit before
-                char input = check();
+                char input = doCheck();
 
                 if (Character.isDigit(input)) {
                     state = 2;
@@ -97,7 +97,7 @@ public class LexicalAnalysis {
                 }
             } else if (state == 3) {
                 // state 3: single or double op
-                char input = check();
+                char input = doCheck();
 
                 if (!SINGLE_OP.contains(input)) {
                     undoCheck();
@@ -125,7 +125,7 @@ public class LexicalAnalysis {
                 state = 0;
             } else if (state == 6) {
                 // state 6: int .
-                char input = check();
+                char input = doCheck();
 
                 if (Character.isDigit(input)) {
                     state = 6;
@@ -143,7 +143,7 @@ public class LexicalAnalysis {
                 state = 0;
             } else if (state == 10) {
                 // state 10: char
-                char input = check();
+                char input = doCheck();
 
                 if (input == '\'') {
                     finishCheck("CHAR");
@@ -153,7 +153,7 @@ public class LexicalAnalysis {
                 }
             } else if (state == 11) {
                 // state 11: string
-                char input = check();
+                char input = doCheck();
 
                 if (input == '\"') {
                     finishCheck("STR");
@@ -167,7 +167,7 @@ public class LexicalAnalysis {
         }
     }
 
-    private char check() {
+    private char doCheck() {
         char c = analyzing.get(0);
         analyzing.remove(0);
         analyzed.add(c);
