@@ -22,14 +22,6 @@ public class LexicalAnalysis {
     private static final List<Character> SINGLE_OP = new ArrayList<>(Arrays.asList(
             '+', '-', '*', '/', '%', '=', '>', '<', '!', '&', '|'
     ));
-//    private static final List<String> TOKENS  = new ArrayList<String>() {
-//        {
-//            addAll(KEYWORDS);
-//            addAll(OP);
-//            addAll(SE);
-//            addAll(OTHER_TOKENS);
-//        }
-//    };
 
     List<Character> analyzed;
     List<Character> analyzing;
@@ -77,6 +69,10 @@ public class LexicalAnalysis {
                     state = 3;
                 } else if (SE.contains(input)) {
                     state = 4;
+                } else if (input == '\''){
+                    state = 10;
+                } else if (input == '\"') {
+                    state = 11;
                 } else {
                     System.out.println("ERROR: " + input);
                 }
@@ -156,26 +152,30 @@ public class LexicalAnalysis {
                 String token = getStringFromList(analyzed);
                 finishCheck(token, "OP", "_");
                 state = 0;
+            } else if (state == 10) {
+                // state 10: char
+                char input = check();
+
+                if (input == '\'') {
+                    String token = getStringFromList(analyzed);
+                    finishCheck(token, "CHAR", token);
+                    state = 0;
+                } else {
+                    state = 10;
+                }
+            } else if (state == 11) {
+                // state 11: string
+                char input = check();
+
+                if (input == '\"') {
+                    String token = getStringFromList(analyzed);
+                    finishCheck(token, "STR", token);
+                    state = 0;
+                } else {
+                    state = 11;
+                }
             }
         }
-//            if (content.charAt(index) == ' ' || content.charAt(index) == '\n') {
-//                index++;
-//                continue;
-//            }
-//            if (Character.isLetter(content.charAt(index))) {
-//                int beginIndex = index;
-//                int endIndex = ++index;
-//                for (endIndex = index; Character.isLetter(content.charAt(index)); index++) {
-//
-//                }
-//                String buffer = content.substring(beginIndex, endIndex);
-//                if (KEYWORDS.contains(buffer)) {
-//                    Map<String, String> token = new HashMap<>();
-//                    token.put(buffer.toUpperCase(), "");
-//                    result.add(token);
-//                }
-//            }
-//        }
     }
 
     private char check() {
