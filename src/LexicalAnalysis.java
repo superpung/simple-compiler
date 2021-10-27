@@ -71,7 +71,8 @@ public class LexicalAnalysis {
                 } else if (input == '\"') {
                     state = 11;
                 } else {
-                    System.out.println("Unrecognized input: " + input + "!");
+                    skipCheck();
+                    System.out.println("Unrecognized symbol: " + input + "!");
                 }
             } else if (state == 1) {
                 // state 1: 1 letter before
