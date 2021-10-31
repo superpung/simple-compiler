@@ -105,8 +105,9 @@ public class LexicalAnalysis {
                     finishCheck("OP");
                     state = 0;
                 } else {
-                    state = 9;
                     undoCheck();
+                    finishCheck("OP");
+                    state = 0;
                 }
             } else if (state == 4) {
                 // state 4: se
@@ -139,10 +140,6 @@ public class LexicalAnalysis {
             } else if (state == 7) {
                 // state 7: int or float
                 finishCheck("CONST");
-                state = 0;
-            } else if (state == 9) {
-                // state 9: single op
-                finishCheck("OP");
                 state = 0;
             } else if (state == 10) {
                 // state 10: char
