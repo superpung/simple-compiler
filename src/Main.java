@@ -3,7 +3,7 @@
  */
 public class Main {
     public static void main(String[] argc) {
-        LexicalAnalysis lexicalAnalysis = new LexicalAnalysis("./test/test1.c");
+        LexicalAnalysis lexicalAnalysis = new LexicalAnalysis("./test/test5.c");
         lexicalAnalysis.printResult();
     }
 }
