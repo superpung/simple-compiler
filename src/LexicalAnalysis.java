@@ -35,7 +35,10 @@ public class LexicalAnalysis {
     }
 
     public void printResult() {
+        System.out.println("token 序列 ------------------------------------------------");
         System.out.println(tokensResult.toString());
+        System.out.println("");
+        System.out.println("符号表 ---------------------");
         for (String token: tokensResult) {
             String output = "";
             output += token + "\t<";
@@ -101,14 +104,10 @@ public class LexicalAnalysis {
                     undoCheck();
                 }
                 String token = getStringFromList(analyzed);
-                if (OP.contains(token)) {
-                    finishCheck("OP");
-                    state = 0;
-                } else {
+                if (!OP.contains(token)) {
                     undoCheck();
-                    finishCheck("OP");
-                    state = 0;
                 }
+                state = 9;
             } else if (state == 4) {
                 // state 4: se
                 finishCheck("SE");
@@ -118,10 +117,10 @@ public class LexicalAnalysis {
                 String token = getStringFromList(analyzed);
                 if (KEYWORDS.contains(token)) {
                     finishCheck(token.toUpperCase());
+                    state = 0;
                 } else {
-                    finishCheck("IDN");
+                    state = 8;
                 }
-                state = 0;
             } else if (state == 6) {
                 // state 6: int .
                 char input = doCheck();
@@ -141,26 +140,39 @@ public class LexicalAnalysis {
                 // state 7: int or float
                 finishCheck("CONST");
                 state = 0;
+            } else if (state == 8) {
+                finishCheck("IDN");
+                state = 0;
+            } else if (state == 9) {
+                // state 9: op
+                finishCheck("OP");
+                state = 0;
             } else if (state == 10) {
-                // state 10: char
+                // state 10: char?
                 char input = doCheck();
 
                 if (input == '\'') {
-                    finishCheck("CHAR");
-                    state = 0;
+                    state = 12;
                 } else {
                     state = 10;
                 }
             } else if (state == 11) {
-                // state 11: string
+                // state 11: string?
                 char input = doCheck();
 
                 if (input == '\"') {
-                    finishCheck("STR");
-                    state = 0;
+                    state = 13;
                 } else {
                     state = 11;
                 }
+            } else if (state == 12) {
+                // state 12: char
+                finishCheck("CHAR");
+                state = 0;
+            } else if (state == 13) {
+                // state 13: string
+                finishCheck("STR");
+                state = 0;
             } else {
                 System.out.println("Unreachable state!");
             }
