@@ -35,10 +35,10 @@ public class LexicalAnalysis {
     }
 
     public void printResult() {
-        System.out.println("token 序列 ------------------------------------------------");
+        System.out.println("# token 序列");
         System.out.println(tokensResult.toString());
         System.out.println("");
-        System.out.println("符号表 ---------------------");
+        System.out.println("# 符号表");
         for (String token: tokensResult) {
             String output = "";
             output += token + "\t<";
@@ -56,7 +56,7 @@ public class LexicalAnalysis {
                 // state 0: initial state
                 char input = doCheck();
 
-                if (input == ' ' || input == '\t' || input == '\n') {
+                if (input == ' ' || input == '\t' || input == '\n' || input == '\r') {
                     skipCheck();
                 } else if (Character.isLetter(input) || input == '_') {
                     state = 1;
@@ -72,7 +72,7 @@ public class LexicalAnalysis {
                     state = 11;
                 } else {
                     skipCheck();
-                    System.out.println("Unrecognized symbol: " + input + "!");
+                    System.out.println("Unrecognized symbol: " + input);
                 }
             } else if (state == 1) {
                 // state 1: 1 letter before
@@ -99,15 +99,37 @@ public class LexicalAnalysis {
             } else if (state == 3) {
                 // state 3: single or double op
                 char input = doCheck();
-
+                // 现在有一个运算符和一个未知字符
                 if (!SINGLE_OP.contains(input)) {
                     undoCheck();
                 }
+                // 如果第二个字符不在 SINGLE_OP 里，那么肯定最多也就是一个单字符的运算符
                 String token = getStringFromList(analyzed);
-                if (!OP.contains(token)) {
-                    undoCheck();
+                // token 是可疑的单字符运算符，或者是可疑的双字符运算符
+                if (OP.contains(token)) {
+                    // 成功了
+                    state = 9;
+                } else {
+                    // 失败了
+                    if (token.length() == 2) {
+                        // 双字符失败了，然后判断是不是单字符
+                        undoCheck();
+                        token = getStringFromList(analyzed);
+                        if (OP.contains(token)) {
+                            state = 9;
+                        } else {
+                            // 单字符失败了
+                            skipCheck();
+                            System.out.println("Unrecognized symbol: " + token);
+                            state = 0;
+                        }
+                    } else {
+                        // 单字符失败了
+                        skipCheck();
+                        System.out.println("Unrecognized symbol: " + token);
+                        state = 0;
+                    }
                 }
-                state = 9;
             } else if (state == 4) {
                 // state 4: se
                 finishCheck("SE");
