@@ -97,6 +97,9 @@ public class LexicalAnalysis {
                 // state 3: single or double op
                 char input = doCheck();
 
+                if (!SINGLE_OP.contains(input)) {
+                    undoCheck();
+                }
                 String token = getStringFromList(analyzed);
                 if (OP.contains(token)) {
                     finishCheck("OP");
