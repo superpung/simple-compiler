@@ -60,7 +60,7 @@ public class SyntaxAnalysis {
     public void printTable() {
         System.out.printf("%18s", " ");
         for (String terminalSymbol: TERMINAL_SYMBOLS) {
-            System.out.printf("%8s", terminalSymbol);
+            System.out.printf("%60s", terminalSymbol);
         }
         System.out.println();
         for (String notTerminalSymbol: notTerminalSymbols) {
@@ -68,7 +68,7 @@ public class SyntaxAnalysis {
             for (String terminalSymbol: TERMINAL_SYMBOLS) {
                 List<String> key = new ArrayList<>(Arrays.asList(notTerminalSymbol, terminalSymbol));
                 String value = predictTable.get(key);
-                System.out.printf("%8s", value);
+                System.out.printf("%60s", value);
             }
             System.out.println();
         }
