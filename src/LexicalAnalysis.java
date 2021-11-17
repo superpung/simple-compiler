@@ -22,30 +22,51 @@ public class LexicalAnalysis {
 
     private final List<Character> analyzed;
     private final List<Character> analyzing;
-    private final List<String> tokensResult;
+    private final List<String> preTokensResult;
     private final Map<String, String[]> tableResult;
 
     public LexicalAnalysis(String filename) {
         String content = readFromFile(filename) + '\n';
         analyzing = content.chars().mapToObj(e -> (char)e).collect(Collectors.toList());
         analyzed = new ArrayList<>();
-        tokensResult = new ArrayList<>();
+        preTokensResult = new ArrayList<>();
         tableResult = new HashMap<>();
         analyze();
     }
 
     public void printResult() {
         System.out.println("# token 序列");
-        System.out.println(tokensResult.toString());
+        System.out.println(getTokensResult().toString());
         System.out.println("");
         System.out.println("# 符号表");
-        for (String token: tokensResult) {
+        for (String token: preTokensResult) {
             String output = "";
             output += token + "\t<";
             String[] map = tableResult.get(token);
             output += map[0] + "," + map[1] + ">";
             System.out.println(output);
         }
+    }
+
+    public List<String> getTokensResult() {
+        List<String> result = new ArrayList<>();
+        for (String pre: preTokensResult) {
+            String[] reals = tableResult.get(pre);
+            String real = reals[0];
+            if ("IDN".equals(real) || "CHAR".equals(real) || "STR".equals(real)) {
+                result.add(real);
+            } else if ("CONST".equals(real)) {
+                List<String> splits = new ArrayList<>(Arrays.asList(reals[1].split("")));
+                if (splits.contains(".")) {
+                    result.add("FLOAT");
+                } else {
+                    result.add("INT");
+                }
+            } else {
+                result.add(pre);
+            }
+        }
+        return result;
     }
 
     private void analyze() {
@@ -225,7 +246,7 @@ public class LexicalAnalysis {
             value = token;
         }
         String[] typeAndValue = new String[]{type, value};
-        tokensResult.add(token);
+        preTokensResult.add(token);
         tableResult.put(token, typeAndValue);
         analyzed.clear();
     }
