@@ -13,15 +13,14 @@ public class SyntaxAnalysis {
             "(", ")", "{", "}", ";", ",", "[", "]",
             "IDN", "INT", "FLOAT", "CHAR", "STR", "$"
     ));
-    private List<String> notTerminalSymbols = new ArrayList<>();
-    private Map<String, List<String[]>> syntax;
-    private Map<String, List<String>> firstSet;
-    private Map<String, List<String>> followSet;
-    private Map<List<String>, String> predictTable;
-    private List<String> tokens;
+    private final List<String> notTerminalSymbols = new ArrayList<>();
+    private final Map<String, List<String>> firstSet;
+    private final Map<String, List<String>> followSet;
+    private final Map<List<String>, String> predictTable;
+    private final List<String> tokens;
 
     public SyntaxAnalysis(String filename, List<String> tokens) {
-        syntax = readSyntax(filename);
+        Map<String, List<String[]>> syntax = readSyntax(filename);
         firstSet = getFirstSet(syntax);
         followSet = getFollowSet(syntax, firstSet);
         predictTable = getPredictTable(syntax, firstSet, followSet);
@@ -261,9 +260,6 @@ public class SyntaxAnalysis {
                                 add.append(" ");
                             }
                         }
-//                        String buf = result.get(key);
-//                        buf += add.toString();
-//                        result.put(key, buf);
                         result.put(key, add.toString());
                     } else if (rights.length == 1 && "$".equals(rights[0])) {
                         // 有空，情况（3）
@@ -286,9 +282,6 @@ public class SyntaxAnalysis {
                                             add.append(" ");
                                         }
                                     }
-//                                    String buf = result.get(key);
-//                                    buf += add.toString();
-//                                    result.put(key, buf);
                                     result.put(key, add.toString());
                                     break;
                                 } else if (firstSet.get(rights[i]).contains("$")) {
@@ -305,9 +298,6 @@ public class SyntaxAnalysis {
                                         add.append(" ");
                                     }
                                 }
-//                                String buf = result.get(key);
-//                                buf += add.toString();
-//                                result.put(key, buf);
                                 result.put(key, add.toString());
                                 break;
                             }
