@@ -317,6 +317,7 @@ public class SyntaxAnalysis {
         List<String> stringStack = new ArrayList<>(token);
         stringStack.add("#");
         Collections.reverse(stringStack);
+        int count = 1;
 
         while (true) {
             if (symbolStack.size() == 1 && "#".equals(symbolStack.get(0)) && stringStack.size() == 1 && "#".equals(stringStack.get(0))) {
@@ -326,7 +327,7 @@ public class SyntaxAnalysis {
             String symbol = symbolStack.get(symbolStack.size() - 1);
             String cha = stringStack.get(stringStack.size() - 1);
             if (symbol.equals(cha)) {
-                System.out.print(symbol + "-" + cha + "（跳过）          ");
+                System.out.print("（" + count++ + "）" + symbol + "-" + cha + "（跳过）          ");
                 for (int i = symbolStack.size() - 1; i > 0; i--) {
                     System.out.print(symbolStack.get(i));
                     if (i > 1) {
@@ -343,7 +344,7 @@ public class SyntaxAnalysis {
                     System.out.println("不可预测的符号" + symbol + "和字符" + cha);
                     break;
                 }
-                System.out.print(symbol + "-" + cha + "          ");
+                System.out.print("（" + count++ + "）" + symbol + "-" + cha + "          ");
                 for (int i = symbolStack.size() - 1; i > 0; i--) {
                     System.out.print(symbolStack.get(i));
                     if (i > 1) {
