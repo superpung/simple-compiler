@@ -327,9 +327,9 @@ public class SyntaxAnalysis {
             String cha = stringStack.get(stringStack.size() - 1);
             if (symbol.equals(cha)) {
                 System.out.print(symbol + "-" + cha + "（跳过）          ");
-                for (int i = 0; i < symbolStack.size(); i++) {
+                for (int i = symbolStack.size() - 1; i > 0; i--) {
                     System.out.print(symbolStack.get(i));
-                    if (i < symbolStack.size() - 1) {
+                    if (i > 1) {
                         System.out.print(" ");
                     }
                 }
@@ -344,9 +344,9 @@ public class SyntaxAnalysis {
                     break;
                 }
                 System.out.print(symbol + "-" + cha + "          ");
-                for (int i = 0; i < symbolStack.size(); i++) {
+                for (int i = symbolStack.size() - 1; i > 0; i--) {
                     System.out.print(symbolStack.get(i));
-                    if (i < symbolStack.size() - 1) {
+                    if (i > 1) {
                         System.out.print(" ");
                     }
                 }
