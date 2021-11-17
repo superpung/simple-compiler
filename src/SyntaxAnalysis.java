@@ -7,7 +7,7 @@ import java.util.*;
  * @author super
  */
 public class SyntaxAnalysis {
-    private List<String> TERMINAL_SYMBOLS = new ArrayList<>(Arrays.asList(
+    private final static List<String> TERMINAL_SYMBOLS = new ArrayList<>(Arrays.asList(
             "while", "for", "continue", "break", "if", "else", "float", "int", "char", "void", "return",
             "+", "-", "*", "/", "%", "=", ">", "<", "==", "<=", ">=", "!=", "++", "--", "&&", "||", "+=", "-=", "*=", "/=", "%=",
             "(", ")", "{", "}", ";", ",", "[", "]",
