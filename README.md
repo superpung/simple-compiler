@@ -137,4 +137,189 @@ i	<IDN,i>
 
 ## Syntax Analysis 语法分析器
 
-11.18 更新
+### 算法描述
+
+语法分析器由 Java 实现。
+
+整体步骤为：
+
+- 读取文件，解析得到语法规则
+- 根据语法规则得到 FIRST 集合
+- 根据语法规则和 FIRST 集合得到 FOLLOW 集合
+- 根据语法规则、FIRST 集合和 FOLLOW 集合得到预测分析表
+- 根据预测分析表、词法分析器得到的 token 序列和起始符号得到规约序列
+
+首先定义了``TERMINAL_SYMBOLS``存储终结符、``syntax``存储语法规则、``notTerminalSymbols``存储非终结符、``firstSet``存储First集、``followSet``存储Follow集。
+
+通过文件读取所有的语法规则，并通过``getFirstSet``和``getFollowSet``计算得到First集和Follow集。
+
+#### readSyntax
+
+以``Map<String, List<String[]>>``存储产生式的左侧和右侧的所有元素，并将左侧的元素添加进非终结符的集合中。
+
+#### getFirstSet
+
+对于每个产生式，判断其右侧的第一个符号是否为终结符：
+
+- 若是终结符，则加入First集合
+
+- 若不是，则依次判断这个串前若干个非终结符的First集是否有空，直到遇见终结符
+	- 是非终结符，继续判断其 first 集合是否有空
+		- 是非终结符，且 first 集有空，把 first 集非空元素加入，继续循环
+		- 是非终结符，且 first 集不含空，把 first 集元素加入，停止循环
+	- 是终结符，停止循环
+
+#### getFollowSet
+
+对于每个产生式，判断其右侧的每一个非终结符元素：
+
+- 没到结尾，是非终结符
+	- 下一个还是非终结符，遍历它的 first
+		- 把非空的加到 follow 里
+		- 下一个是最后一个，而且有空，添加``FOLLOW(left)``至``FOLLOW(right)``中
+	- 下一个是终结符，加入到 follow 集中
+- 到结尾且是非终结符，添加``FOLLOW(left)``至``FOLLOW(right)``中
+
+#### getPredictTable
+
+使用 List 到 String 的映射存储，即非终结符和终结符确定一个规约规则。
+
+对文法的每个产生式 A -> alpha，执行以下两步：
+
+- 对每个终结符 a 属于 alpha 的 FIRST 集，把 A -> alpha 加入到 M[A, a] 中
+- 若 alpha 的 FIRST 集有空，则对任何 FOLLOW(A) 中的 b，把 A -> \$ 加入到 M[A, b] 中
+
+把所有无定义的 M[A, a] 标上出错标志 error。
+
+#### predict
+
+整体思路如下：
+
+![](./img/2-1.png)
+
+### 输出格式说明
+
+ 1. First 集与 Follow 集
+
+	```shell
+	FIRST:
+	S: int char float void IDN
+	
+	FOLLOW:
+	S: #
+	```
+
+ 2. 预测分析表（非终结符位宽 18，其他位宽 60）
+
+	```
+	     while      for continue    break
+	S    error    error    error    error
+	```
+
+ 3. 规约序列：（序号）栈顶符号-面临输入符号（执行动作）【十个空格】栈顶到栈底符号串【十个空格】 选用规则
+
+	```shell
+	（1）S-int          S          S -> func
+	```
+
+
+### 源程序编译步骤
+
+下载“源代码”压缩包并解压，终端打开当前目录，`ls` 显示为：
+
+```shell
+❯ ls
+src  test
+```
+
+其中 `test` 目录为测试文件存放处，`src` 目录为源程序。
+
+首先将测试文件拷贝到 `test` 目录，其次在 `src/Main.java` 中修改第 8 行第 71 列开始的文件名为测试文件名（下方的 `test1.c` 即为测试文件名）：
+
+```java
+/**
+ * @author super
+ */
+public class Main {
+    public static void main(String[] argc) {
+        LexicalAnalysis lexicalAnalysis = new LexicalAnalysis("./test/test1.c");
+        lexicalAnalysis.printResult();
+        SyntaxAnalysis syntaxAnalysis = new SyntaxAnalysis("./src/syntax.txt", lexicalAnalysis.getTokensResult());
+        System.out.println("# FIRST 集合");
+        syntaxAnalysis.printFirst();
+        System.out.println("# FOLLOW 集合");
+        syntaxAnalysis.printFollow();
+        System.out.println("# 预测分析表");
+        syntaxAnalysis.printTable();
+        System.out.println("# 规约序列");
+        syntaxAnalysis.printPredict("S");
+    }
+}
+```
+
+编译：
+
+```shell
+❯ javac src/LexicalAnalysis.java src/SyntaxAnalysis.java src/Main.java
+```
+
+运行：
+
+```shell
+❯ java src.Main
+```
+
+得到类似输出即成功：
+
+```shell
+# token 序列
+[void, IDN, (, ), {, int, IDN, =, INT, ;, while, (, IDN, <=, INT, ), {, IDN, =, IDN, +, INT, ;, }, }]
+
+# 符号表
+void	<VOID,_>
+main	<IDN,main>
+(	<SE,_>
+)	<SE,_>
+{	<SE,_>
+int	<INT,_>
+i	<IDN,i>
+=	<OP,_>
+2	<CONST,2>
+;	<SE,_>
+while	<WHILE,_>
+(	<SE,_>
+i	<IDN,i>
+<=	<OP,_>
+4	<CONST,4>
+)	<SE,_>
+{	<SE,_>
+i	<IDN,i>
+=	<OP,_>
+i	<IDN,i>
++	<OP,_>
+1	<CONST,1>
+;	<SE,_>
+}	<SE,_>
+}	<SE,_>
+# FIRST 集合
+FIRST:
+S: int char float void IDN
+func: int char float void IDN
+type: int char float void $
+args: int char float void IDN $
+arg: , $
+
+...（此处省略若干行）
+
+（80）INT-INT（跳过）          INT item' value' ; stmts } stmts }
+（81）item'-;          item' value' ; stmts } stmts }          item' -> $
+（82）value'-;          value' ; stmts } stmts }          value' -> $
+（83）;-;（跳过）          ; stmts } stmts }
+（84）stmts-}          stmts } stmts }          stmts -> $
+（85）}-}（跳过）          } stmts }
+（86）stmts-}          stmts }          stmts -> $
+（87）}-}（跳过）          }
+accept!
+```
+
+> 注意：修改 `src` 中文件后需要重新编译再运行；修改 `test` 中文件后无需重新编译，直接运行即可。
