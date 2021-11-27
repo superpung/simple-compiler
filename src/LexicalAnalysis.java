@@ -35,10 +35,12 @@ public class LexicalAnalysis {
     }
 
     public void printResult() {
-        System.out.println("# token 序列");
-        System.out.println(getTokensResult().toString());
-        System.out.println("");
-        System.out.println("# 符号表");
+        System.out.println("# 词素序列");
+        System.out.println(preTokensResult.toString());
+//        System.out.println("# 词法单元 token 序列");
+//        System.out.println(getTokensResult().toString());
+//        System.out.println("# 符号表");
+        System.out.println("# 词法单元 token 序列");
         for (String token: preTokensResult) {
             String output = "";
             output += token + "\t<";

@@ -340,8 +340,8 @@ public class SyntaxAnalysis {
             } else {
                 List<String> key = new ArrayList<>(Arrays.asList(symbol, cha));
                 String value = table.get(key);
-                if ("error".equals(value)) {
-                    System.out.println("不可预测的符号" + symbol + "和字符" + cha);
+                if ("error".equals(value) || value == null) {
+                    System.out.println("源程序语法不正确，读入字符 " + cha + " 出现错误，应为符号 " + symbol);
                     break;
                 }
                 System.out.print("（" + count++ + "）" + symbol + "-" + cha + "          ");
