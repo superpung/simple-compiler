@@ -1,5 +1,9 @@
 # Simple Compiler
 
+## todo
+
+- [ ] Fix bugs, pr welcome!
+
 ## Lexical Analysis 词法分析器
 
 ### 算法描述
